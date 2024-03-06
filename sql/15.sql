@@ -3,13 +3,11 @@
  */
 
 SELECT
-    EXTRACT(YEAR FROM rental_date) AS "Year",
-    EXTRACT(MONTH FROM rental_date) AS "Month",
-    SUM(p.amount) AS "Total Revenue"
-FROM rental
-JOIN payment p  USING (rental_id)
-GROUP BY ROLLUP (
-    EXTRACT(YEAR FROM rental_date),
-    EXTRACT(MONTH FROM rental_date)
-)
-ORDER BY "Year", "Month" ASC;
+film.title title,
+sum(CASE WHEN amount IS NULL THEN 0.00 ELSE amount END) revenue
+FROM film
+LEFT JOIN inventory USING (film_id)
+LEFT JOIN rental USING (inventory_id)
+LEFT JOIN payment USING (rental_id)
+GROUP BY 1 ORDER BY 2 DESC;
+
